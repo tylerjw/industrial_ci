@@ -406,8 +406,11 @@ function ici_make_temp_dir {
 
 function ici_relocate_target_path {
   local tmp_src
+  local exclude_cmd
   ici_make_temp_dir tmp_src
-  cp -a "$TARGET_REPO_PATH" "$tmp_src/"
+  [ -n "$BASEDIR" ] && exclude_cmd+='-not -path "'$BASEDIR'" '
+  [ -n "$CCACHE_DIR" ] && exclude_cmd+='-not -path "'$CCACHE_DIR'" '
+  find "$TARGET_REPO_PATH" -maxdepth 1 -mindepth 1 "$exclude_cmd" -exec cp -a {} "$tmp_src/$(basename "$TARGET_REPO_PATH")" \;
   export TARGET_REPO_PATH
   TARGET_REPO_PATH="$tmp_src/$(basename "$TARGET_REPO_PATH")"
 }
